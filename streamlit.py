@@ -6,10 +6,11 @@ engine = create_engine("postgresql://postgres:password@localhost:5432/Youtube_AP
 
 df = pd.read_sql("SELECT * FROM youtube_videos", engine)
 
-# visualaization
+
 
 st.title("YouTube Dashboard")
 
+# Kpi
 views,likes,videos=st.columns(3)
 
 views.metric("Total Views", df["viewCount"].sum())
@@ -34,7 +35,7 @@ time_df = df.groupby("Date")[["viewCount", "likeCount"]].sum()
 
 st.line_chart(time_df)
 
-# choose channel
+# choose channel to view their stats
 st.subheader("Choose a channel to view their stats")
 channel = st.selectbox("Select Channel", df["channelTitle"].unique())
 filtered_df = df[df["channelTitle"]==channel]
