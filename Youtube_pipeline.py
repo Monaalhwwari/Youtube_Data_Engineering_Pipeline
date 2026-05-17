@@ -1,9 +1,8 @@
 import logging
 import requests
 import pandas as pd
-import matplotlib.pyplot as plt
 import streamlit as st
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine,URL
 from dotenv import load_dotenv
 import os
 
@@ -11,15 +10,22 @@ load_dotenv()
 
 api = os.getenv("api_key")
 password =os.getenv("db_password")
-print("API KEY:", api)
-print("DB PASSWORD:", password)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
+connection_url = URL.create(
+    "postgresql+psycopg2",
+    username="postgres",
+    password=password,
+    host="127.0.0.1",
+    port=5432,
+    database="Youtube_API"
+)
 
-engine = create_engine(f"postgresql://postgres:{password}@localhost:5432/Youtube_API")
+engine = create_engine(connection_url)
 
 @st.cache_data
 def extract():
@@ -63,7 +69,7 @@ def extract():
     Second_df = v_response.json()
     Second_df = pd.json_normalize(Second_df["items"])
 
-    Second_df["videoId"] = Second_df["id"].astype(str)
+    Second_df["id"] = Second_df["id"].astype(str)
 
     return first_df, Second_df
 
